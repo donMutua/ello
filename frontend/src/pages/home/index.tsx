@@ -131,7 +131,7 @@ const Home = () => {
         </Paper>
         {showDropdown && (
           <SearchResultsDropdown
-            books={filteredBooks}
+            books={filteredBooks as Book[]}
             onSelectBook={handleSelectBook}
           />
         )}
