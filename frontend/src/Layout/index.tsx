@@ -21,7 +21,9 @@ const Layout = ({ children }: LayoutProps) => {
         height: "100vh",
       }}
     >
-      <Box sx={{ width: "80%", margin: "0 auto" }}>{children}</Box>
+      <Box sx={{ width: "100%", margin: "0 auto", overflowY: "scroll" }}>
+        {children}
+      </Box>
     </Box>
   );
 };
