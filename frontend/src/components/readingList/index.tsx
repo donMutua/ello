@@ -5,10 +5,16 @@ import BookCard from "../bookCard";
 interface BookListProps {
   books: Book[];
   loading: boolean;
-  onToggleReadingList: (book: Book) => void;
+  handleAddToReadingList: (book: Book | null) => void; // Updated type
+  isBookInReadingList: (book: Book | null) => boolean;
 }
 
-const BookList = ({ books, loading }: BookListProps) => {
+const BookList = ({
+  books,
+  loading,
+  handleAddToReadingList,
+  isBookInReadingList,
+}: BookListProps) => {
   return (
     <Grid container spacing={2} mt={3}>
       {loading
@@ -30,7 +36,13 @@ const BookList = ({ books, loading }: BookListProps) => {
               lg={3}
             >
               <Box sx={{ height: "100%", display: "flex" }}>
-                {book && <BookCard book={book} />}
+                {book && (
+                  <BookCard
+                    book={book}
+                    handleAddToReadingList={handleAddToReadingList}
+                    isBookInReadingList={isBookInReadingList}
+                  />
+                )}
               </Box>
             </Grid>
           ))}

@@ -31,7 +31,6 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   const [readingList, setReadingList] = useState<Book[]>(() => {
     const savedList = localStorage.getItem("readingList");
@@ -48,12 +47,8 @@ const Home = () => {
   };
 
   const handleSelectBook = (book: Book) => {
-    setSelectedBook(book);
     setSearchQuery(book?.title ?? "");
     setShowDropdown(false);
-    if (!readingList.some((b) => b.title === book.title)) {
-      setReadingList([...readingList, book]);
-    }
   };
 
   const handleAddToReadingList = (book: Book) => {
@@ -63,6 +58,10 @@ const Home = () => {
       setReadingList([...readingList, book]);
     }
   };
+
+  //check if the book is in the reading list
+  const isBookInReadingList = (book: Book) =>
+    readingList.some((b) => b.title === book.title);
 
   //on error show the Error page
 
@@ -137,12 +136,24 @@ const Home = () => {
         )}
       </Box>
 
-      {selectedBook && (
+      {loading || filteredBooks ? (
         <BookList
-          books={[selectedBook]}
+          books={filteredBooks as Book[]}
           loading={loading}
-          onToggleReadingList={handleAddToReadingList}
+          handleAddToReadingList={handleAddToReadingList}
+          isBookInReadingList={isBookInReadingList}
         />
+      ) : null}
+
+      {loading || readingList.length ? (
+        <BookList
+          books={readingList}
+          loading={loading}
+          handleAddToReadingList={handleAddToReadingList}
+          isBookInReadingList={isBookInReadingList}
+        />
+      ) : (
+        <Typography>No books assigned</Typography>
       )}
     </Layout>
   );
