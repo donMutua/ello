@@ -1,4 +1,10 @@
-import { Box, Paper, InputBase, InputAdornment } from "@mui/material";
+import {
+  Box,
+  Paper,
+  InputBase,
+  InputAdornment,
+  Typography,
+} from "@mui/material";
 import { useQuery } from "@apollo/client";
 
 import {
@@ -14,6 +20,7 @@ import BookList from "../../components/readingList";
 import Layout from "../../Layout";
 import { useEffect, useState } from "react";
 import useDebounce from "../../hooks/useDebounce";
+import SearchResultsDropdown from "../../components/Search";
 
 const Home = () => {
   const { data, loading, error } = useQuery<
@@ -23,6 +30,8 @@ const Home = () => {
 
   const [searchQuery, setSearchQuery] = useState<string>("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   const [readingList, setReadingList] = useState<Book[]>(() => {
     const savedList = localStorage.getItem("readingList");
@@ -35,6 +44,16 @@ const Home = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
+    setShowDropdown(e.target.value.length > 0);
+  };
+
+  const handleSelectBook = (book: Book) => {
+    setSelectedBook(book);
+    setSearchQuery(book?.title ?? "");
+    setShowDropdown(false);
+    if (!readingList.some((b) => b.title === book.title)) {
+      setReadingList([...readingList, book]);
+    }
   };
 
   const handleAddToReadingList = (book: Book) => {
@@ -69,7 +88,15 @@ const Home = () => {
 
   return (
     <Layout>
-      <Box>
+      <Box
+        sx={{
+          width: "80%",
+          margin: "auto",
+        }}
+      >
+        <Typography variant="h4" component="h1" gutterBottom>
+          Book Assignment
+        </Typography>
         <Paper
           component="form"
           sx={{
@@ -102,11 +129,21 @@ const Home = () => {
             }
           />
         </Paper>
+        {showDropdown && (
+          <SearchResultsDropdown
+            books={filteredBooks}
+            onSelectBook={handleSelectBook}
+          />
+        )}
       </Box>
 
-      {loading || filteredBooks ? (
-        <BookList books={filteredBooks ?? []} loading={loading} />
-      ) : null}
+      {selectedBook && (
+        <BookList
+          books={[selectedBook]}
+          loading={loading}
+          onToggleReadingList={handleAddToReadingList}
+        />
+      )}
     </Layout>
   );
 };

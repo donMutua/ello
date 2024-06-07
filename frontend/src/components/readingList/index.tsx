@@ -5,6 +5,7 @@ import BookCard from "../bookCard";
 interface BookListProps {
   books: Book[];
   loading: boolean;
+  onToggleReadingList: (book: Book) => void;
 }
 
 const BookList = ({ books, loading }: BookListProps) => {
