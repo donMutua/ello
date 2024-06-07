@@ -1,26 +1,72 @@
+import { Box, Paper, InputBase, InputAdornment } from "@mui/material";
+import { useQuery } from "@apollo/client";
+
 import {
-  Box,
-  Paper,
-  InputBase,
-  InputAdornment,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+  GetBooksDocument,
+  GetBooksQuery,
+  GetBooksQueryVariables,
+  Book,
+} from "../../../generated/graphql";
+import Error from "../../pages/error/error";
 
 import SearchIcon from "../../assets/icons/icon-search.svg";
-import BookList from "../../components/bookList";
+import BookList from "../../components/readingList";
 import Layout from "../../Layout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useDebounce from "../../hooks/useDebounce";
 
 const Home = () => {
-  const [readingLevel, setReadingLevel] = useState("");
-  const handleChange = (event: SelectChangeEvent) => {
-    setReadingLevel(event.target.value as string);
+  const { data, loading, error } = useQuery<
+    GetBooksQuery,
+    GetBooksQueryVariables
+  >(GetBooksDocument);
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  const [readingList, setReadingList] = useState<Book[]>(() => {
+    const savedList = localStorage.getItem("readingList");
+    return savedList ? JSON.parse(savedList) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("readingList", JSON.stringify(readingList));
+  }, [readingList]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
   };
+
+  const handleAddToReadingList = (book: Book) => {
+    if (readingList.some((b) => b.title === book.title)) {
+      setReadingList(readingList.filter((b) => b.title !== book.title));
+    } else {
+      setReadingList([...readingList, book]);
+    }
+  };
+
+  //on error show the Error page
+
+  if (error) {
+    return <Error />;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const filteredBooks = debouncedSearchQuery
+    ? (data &&
+        data.books?.filter(
+          (book) =>
+            book?.title &&
+            book.title
+              .toLowerCase()
+              .includes(debouncedSearchQuery.toLowerCase())
+        )) ||
+      []
+    : [];
+
   return (
     <Layout>
       <Box>
@@ -42,6 +88,8 @@ const Home = () => {
               flex: 1,
               border: "none",
             }}
+            value={searchQuery}
+            onChange={handleSearchChange}
             startAdornment={
               <InputAdornment position="start">
                 <img
@@ -56,39 +104,9 @@ const Home = () => {
         </Paper>
       </Box>
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mt: 2,
-        }}
-      >
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#f76434",
-            color: "black",
-          }}
-        >
-          All books
-        </Button>
-        <FormControl sx={{ flexGrow: 0.7 }}>
-          <InputLabel id="reading-level">Level</InputLabel>
-          <Select
-            labelId="reading-level"
-            id="reading-level-select"
-            value={readingLevel}
-            label="Age"
-            onChange={handleChange}
-          >
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-      <BookList />
+      {loading || filteredBooks ? (
+        <BookList books={filteredBooks ?? []} loading={loading} />
+      ) : null}
     </Layout>
   );
 };

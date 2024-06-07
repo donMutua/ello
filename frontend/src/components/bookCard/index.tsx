@@ -1,4 +1,6 @@
 import Card from "@mui/material/Card";
+import IconButton from "@mui/material/IconButton";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Maybe, Book as BookType } from "../../../generated/graphql";
 
 type Book = Maybe<BookType>;
@@ -15,7 +17,7 @@ import Typography from "@mui/material/Typography";
 export default function BookCard({ book }: BookCardProps) {
   const assetsPath = "src/";
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ width: 300 }}>
       <CardMedia
         sx={{ height: 140 }}
         image={book ? `${assetsPath}${book.coverPhotoURL}` : undefined}
@@ -29,7 +31,14 @@ export default function BookCard({ book }: BookCardProps) {
           {book?.author}
         </Typography>
       </CardContent>
-      <CardActions>
+      <CardActions
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: 1,
+        }}
+      >
         <Typography
           variant="subtitle1"
           sx={{
@@ -40,6 +49,14 @@ export default function BookCard({ book }: BookCardProps) {
         >
           Reading Level : {book?.readingLevel}
         </Typography>
+        <IconButton
+          aria-label="add to reading list"
+          sx={{
+            color: "#f76434",
+          }}
+        >
+          <FavoriteIcon />
+        </IconButton>
       </CardActions>
     </Card>
   );

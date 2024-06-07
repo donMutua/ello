@@ -1,28 +1,13 @@
 import { Grid, Box, Skeleton } from "@mui/material";
-import { useQuery } from "@apollo/client";
-
+import { Book } from "../../../generated/graphql";
 import BookCard from "../bookCard";
 
-import {
-  GetBooksDocument,
-  GetBooksQuery,
-  GetBooksQueryVariables,
-} from "../../../generated/graphql";
-import Error from "../../pages/error/error";
+interface BookListProps {
+  books: Book[];
+  loading: boolean;
+}
 
-const BookList = () => {
-  const { data, loading, error } = useQuery<
-    GetBooksQuery,
-    GetBooksQueryVariables
-  >(GetBooksDocument);
-
-  const books = data?.books;
-
-  //on error show the Error page
-
-  if (error) {
-    return <Error />;
-  }
+const BookList = ({ books, loading }: BookListProps) => {
   return (
     <Grid container spacing={2} mt={3}>
       {loading
@@ -35,7 +20,14 @@ const BookList = () => {
           ))
         : books &&
           books.map((book) => (
-            <Grid key={book?.author} item xs={12} sm={6} md={4} lg={3}>
+            <Grid
+              key={`${book?.title}-${book?.author}`}
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              lg={3}
+            >
               <Box sx={{ height: "100%", display: "flex" }}>
                 {book && <BookCard book={book} />}
               </Box>
