@@ -19,6 +19,24 @@ const graphqlResponse = {
         readingLevel: "I",
         title: "Happy Knight and the Magic Spell",
       },
+      {
+        author: "Reese Smith",
+        coverPhotoURL: "assets/image2.webp",
+        readingLevel: "H",
+        title: "Curious Princess and the Enchanted Garden",
+      },
+      {
+        author: "Jordan Jones",
+        coverPhotoURL: "assets/image10.webp",
+        readingLevel: "I",
+        title: "Clever Monster on the Wonder Island",
+      },
+      {
+        author: "Quinn Brown",
+        coverPhotoURL: "assets/image10.webp",
+        readingLevel: "I",
+        title: "Happy Knight and the Magic Spell",
+      },
     ],
   },
 };
