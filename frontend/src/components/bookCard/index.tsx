@@ -48,6 +48,7 @@ export default function BookCard({
       >
         <Typography
           variant="subtitle1"
+          aria-label="reading level"
           sx={{
             fontWeight: "semibold",
             fontSize: "1rem",
@@ -64,9 +65,9 @@ export default function BookCard({
           onClick={() => handleAddToReadingList(book)}
         >
           {isBookInReadingList(book) ? (
-            <FavoriteIcon />
+            <FavoriteIcon aria-label="favoriteIcon" />
           ) : (
-            <FavoriteBorderOutlinedIcon />
+            <FavoriteBorderOutlinedIcon aria-label="favoriteOutlineIcon" />
           )}
         </IconButton>
       </CardActions>
