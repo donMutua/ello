@@ -1,4 +1,5 @@
 export default {
+  setupFilesAfterEnv: ["<rootDir>/jest-setup.js"],
   preset: "ts-jest",
   testEnvironment: "jest-environment-jsdom",
   transform: {
