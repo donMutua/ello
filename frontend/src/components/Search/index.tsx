@@ -20,7 +20,15 @@ const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
 }) => {
   const assetsPath = "src/";
   return (
-    <Paper style={{ position: "absolute", zIndex: 1, width: "100%" }}>
+    <Paper
+      style={{
+        position: "absolute",
+        zIndex: 1,
+        width: "100%",
+        maxHeight: "300px",
+        overflowY: "auto",
+      }}
+    >
       <List>
         {books.map((book) => (
           <ListItemButton key={book.title} onClick={() => onSelectBook(book)}>
