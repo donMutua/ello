@@ -4,6 +4,7 @@ import {
   InputBase,
   InputAdornment,
   Typography,
+  ClickAwayListener,
 } from "@mui/material";
 import { useQuery } from "@apollo/client";
 
@@ -52,21 +53,27 @@ const Home = () => {
   };
 
   const handleAddToReadingList = (book: Book | null) => {
-    if (!book) {
+    if (book === null) {
       return;
     }
-    if (readingList.some((b) => b.title === book?.title)) {
-      setReadingList(readingList.filter((b) => b?.title !== book?.title));
+    if (readingList.some((b) => b.title === book.title)) {
+      setReadingList(readingList.filter((b) => b.title !== book.title));
     } else {
       setReadingList([...readingList, book]);
     }
   };
 
   //check if the book is in the reading list
-  const isBookInReadingList = (book: Book | null) =>
-    readingList.some((b) => b.title === book?.title);
+  const isBookInReadingList = (book: Book | null) => {
+    if (book === null) {
+      return false;
+    }
 
-  //on error show the Error page
+    return readingList.some((b) => b.title === book.title);
+  };
+  const handleClickAway = () => {
+    setShowDropdown(false);
+  };
 
   if (error) {
     return <Error />;
@@ -92,51 +99,62 @@ const Home = () => {
     <Layout>
       <Box
         sx={{
-          width: "80%",
-          margin: "auto",
+          width: "90%",
         }}
       >
         <Typography variant="h4" component="h1" gutterBottom>
           Book Assignment
         </Typography>
-        <Paper
-          component="form"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            borderRadius: "default",
-            p: 1,
-            backgroundColor: "#f9f9f96c",
-            border: "none",
-          }}
-        >
-          <InputBase
-            placeholder="Search"
-            sx={{
-              ml: 1,
-              flex: 1,
-              border: "none",
-            }}
-            value={searchQuery}
-            onChange={handleSearchChange}
-            startAdornment={
-              <InputAdornment position="start">
-                <img
-                  src={SearchIcon}
-                  alt="search icon"
-                  width={20}
-                  height={20}
+        <ClickAwayListener onClickAway={handleClickAway}>
+          <div>
+            <Paper
+              component="form"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                borderRadius: "default",
+
+                p: 1,
+                backgroundColor: "#f9f9f96c",
+                border: "none",
+              }}
+            >
+              <InputBase
+                placeholder="Search"
+                sx={{
+                  ml: 1,
+                  flex: 1,
+                  border: "none",
+                }}
+                value={searchQuery}
+                onChange={handleSearchChange}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <img
+                      src={SearchIcon}
+                      alt="search icon"
+                      width={20}
+                      height={20}
+                    />
+                  </InputAdornment>
+                }
+              />
+            </Paper>
+            {showDropdown && (
+              <Paper
+                sx={{
+                  maxHeight: "calc(1.5em + 2px + 2px + 2px + 2px + 2px) * 5",
+                  overflow: "auto",
+                }}
+              >
+                <SearchResultsDropdown
+                  books={filteredBooks as Book[]}
+                  onSelectBook={handleSelectBook}
                 />
-              </InputAdornment>
-            }
-          />
-        </Paper>
-        {showDropdown && (
-          <SearchResultsDropdown
-            books={filteredBooks as Book[]}
-            onSelectBook={handleSelectBook}
-          />
-        )}
+              </Paper>
+            )}
+          </div>
+        </ClickAwayListener>
       </Box>
 
       {loading || filteredBooks ? (
@@ -149,14 +167,38 @@ const Home = () => {
       ) : null}
 
       {loading || readingList.length ? (
-        <BookList
-          books={readingList}
-          loading={loading}
-          handleAddToReadingList={handleAddToReadingList}
-          isBookInReadingList={isBookInReadingList}
-        />
+        <>
+          <Typography variant="h5" component="h2" mt={3}>
+            Reading List
+          </Typography>
+          <BookList
+            books={readingList}
+            loading={loading}
+            handleAddToReadingList={handleAddToReadingList}
+            isBookInReadingList={isBookInReadingList}
+          />
+        </>
       ) : (
-        <Typography>No books assigned</Typography>
+        <>
+          <Typography variant="h5" component="h2" mt={10}>
+            Reading List
+          </Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              textAlign: "center",
+              marginTop: "20px",
+              color: "#ff6f61",
+              fontFamily: "'Comic Sans MS', 'Comic Sans', cursive",
+              backgroundColor: "#fff8dc",
+              padding: "10px",
+              borderRadius: "10px",
+            }}
+          >
+            Your reading list is looking a bit bare. Start adding books and let
+            the adventure begin!
+          </Typography>
+        </>
       )}
     </Layout>
   );
