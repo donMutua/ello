@@ -51,17 +51,20 @@ const Home = () => {
     setShowDropdown(false);
   };
 
-  const handleAddToReadingList = (book: Book) => {
-    if (readingList.some((b) => b.title === book.title)) {
-      setReadingList(readingList.filter((b) => b.title !== book.title));
+  const handleAddToReadingList = (book: Book | null) => {
+    if (!book) {
+      return;
+    }
+    if (readingList.some((b) => b.title === book?.title)) {
+      setReadingList(readingList.filter((b) => b?.title !== book?.title));
     } else {
       setReadingList([...readingList, book]);
     }
   };
 
   //check if the book is in the reading list
-  const isBookInReadingList = (book: Book) =>
-    readingList.some((b) => b.title === book.title);
+  const isBookInReadingList = (book: Book | null) =>
+    readingList.some((b) => b.title === book?.title);
 
   //on error show the Error page
 
