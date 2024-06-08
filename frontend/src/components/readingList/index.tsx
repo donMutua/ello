@@ -19,7 +19,15 @@ const BookList = ({
     <Grid container spacing={2} mt={3}>
       {loading
         ? Array.from(new Array(12)).map((_, index) => (
-            <Grid key={index} item xs={12} sm={6} md={4} lg={3}>
+            <Grid
+              key={index}
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              lg={3}
+              data-testid="skeleton-loader"
+            >
               <Box sx={{ height: "100%", display: "flex" }}>
                 <Skeleton variant="rectangular" width="100%" height={250} />
               </Box>
@@ -34,6 +42,7 @@ const BookList = ({
               sm={6}
               md={4}
               lg={3}
+              data-testid="book-card"
             >
               <Box sx={{ height: "100%", display: "flex" }}>
                 {book && (
